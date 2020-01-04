@@ -8,24 +8,18 @@ namespace MyTodoListApi.Data
     {
         #region public Properties
 
-        public DbSet<ToDoItemModel> TodoList { get; set; }
+        public DbSet<ToDoItemModel> TodoItems { get; set; }
 
-        #endregion MyRegion
+        #endregion 
         public ToDoListDbContext(DbContextOptions<ToDoListDbContext> options):base(options)
         {
 
         }
         
-        public void SeedData()
-        {
-            TodoList.AddRange(new ToDoItemModel() {  IsComplete =false , Task="Wash plates" },
-                new ToDoItemModel() {  IsComplete = true, Task = "read books" },
-                new ToDoItemModel() { IsComplete = false, Task = "write Code" });
-                SaveChanges();
-        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<ToDoItemModel>().ToTable("ToDoItemModel");
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using MyTodoListApi.Data;
 using Microsoft.AspNetCore.Cors;
 using System;
+using System.Linq;
 
 namespace MyTodoListApi
 {
@@ -24,17 +25,21 @@ namespace MyTodoListApi
        
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ToDoListDbContext>(options => 
-                options.UseSqlServer("Server=.;Database=ToDoApp;Trusted_Connection=True;MultipleActiveResultSets= true;",
-                providerOptions => providerOptions.EnableRetryOnFailure())); 
-            services.AddControllers();
             services.AddCors();
-        }
+            services.AddDbContext<ToDoListDbContext>(options=>
+            options.UseSqlServer(Configuration.GetConnectionString("ToDoListDataBase"), options => options.EnableRetryOnFailure() ));
+            services.AddControllers();
+           }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider DiProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env )
         {
-            ServiceProviderContainer.Provider = DiProvider;
+
+            //var context = Provider.GetRequiredService<ToDoListDbContext>();
+            //context.Database.EnsureCreated();
+
+             
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -17,29 +17,25 @@ namespace MyTodoListApi.Controllers
         public ToDoController(ToDoListDbContext _context)
         {
             context = _context;
-
-            context.Database.EnsureCreated();
-            if (!context.TodoList.Any())
-            {
-                context.SeedData();
-
-            }
+            
             
         }
 
         //create simple get and post methods
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ToDoItemModel>>> Get() =>  await context.TodoList.ToListAsync();
+        public async Task<ActionResult<IEnumerable<ToDoItemModel>>> Get() =>  await context.TodoItems.ToListAsync();
 
        [HttpGet("{Id}")]
        
-       public ActionResult <ToDoItemModel> GetId(string Id)
+       public ActionResult<ToDoItemModel> GetId(int Id)
         {
 
-            var Item = context.TodoList.Find(Id) ;
+            var Item =   context.TodoItems.Find(Id) ;
             if (Item == null) return NotFound();
+
+            return Ok(Item);
             
-            return Item;
+           // return Item;
         }
 
 
@@ -48,14 +44,14 @@ namespace MyTodoListApi.Controllers
         public ActionResult<ToDoItemModel> Create (ToDoItemModel Item)
         {
 
-            if (context.TodoList.Find(Item.Id) != null) return BadRequest("You Cannot Create An Already Existing Object"); 
-            context.TodoList.Add(Item);
+            if (context.TodoItems.Find(Item.Id) != null) return BadRequest("You Cannot Create An Already Existing Object"); 
+            context.TodoItems.Add(Item);
             context.SaveChanges();
-            return CreatedAtAction(nameof(GetId), new { id = Item.Id }, Item); 
+            return Created(Item.Id.ToString() , Item); 
         }
 
         [HttpPut("{Id}")]
-        public ActionResult<ToDoItemModel> EditItem (string Id, ToDoItemModel model)
+        public ActionResult<ToDoItemModel> EditItem (int Id, ToDoItemModel model)
         {
 
 
@@ -68,13 +64,14 @@ namespace MyTodoListApi.Controllers
         }
        
         [HttpDelete("{Id}")]
-        public ActionResult<ToDoItemModel> RemoveItem(string Id)
+        public async Task<ActionResult<ToDoItemModel>> RemoveItem(int Id)
         {
 
-            var Item = context.TodoList.Find(Id);
-            context.TodoList.Remove(Item);
-            context.SaveChanges();
-            return NoContent();
+            var Item =  await    context.TodoItems.FindAsync(Id);
+            if (Item == null) return NotFound("Impossible to Delete a Non Existent Item");
+            context.TodoItems.Remove(Item);
+             await context.SaveChangesAsync();
+            return   NoContent();
         }
        
     }
