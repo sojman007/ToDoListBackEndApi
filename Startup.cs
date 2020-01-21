@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyTodoListApi.Data;
-using Microsoft.AspNetCore.Cors;
-using System;
-using System.Linq;
+using MyTodoListApi.Models;
 
 namespace MyTodoListApi
 {
@@ -28,6 +28,35 @@ namespace MyTodoListApi
             services.AddCors();
             services.AddDbContext<ToDoListDbContext>(options=>
             options.UseSqlServer(Configuration.GetConnectionString("ToDoListDataBase"), options => options.EnableRetryOnFailure() ));
+
+            services.AddIdentity<CurrentUser, IdentityRole>()
+                .AddEntityFrameworkStores<ToDoListDbContext>()
+                .AddDefaultTokenProviders();
+
+            //ToDo: configure Cookie timeout
+            //change redirect Url 
+            services.ConfigureApplicationCookie(options => {
+                options.LoginPath = "/auth/register";
+            
+            });
+
+            //configure password requirements
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 2;
+               
+
+
+
+
+            }
+
+            );
+            
             services.AddControllers();
            }
 
@@ -35,9 +64,7 @@ namespace MyTodoListApi
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env )
         {
 
-            //var context = Provider.GetRequiredService<ToDoListDbContext>();
-            //context.Database.EnsureCreated();
-
+           
              
             
             if (env.IsDevelopment())

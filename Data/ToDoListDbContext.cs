@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using MyTodoListApi.Models;
 using System;
 
 namespace MyTodoListApi.Data
 {
-    public class ToDoListDbContext:DbContext
+    public class ToDoListDbContext:IdentityDbContext<CurrentUser>
     {
         #region public Properties
 
