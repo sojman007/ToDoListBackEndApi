@@ -5,10 +5,10 @@ using MyTodoListApi.Data;
 using MyTodoListApi.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using System;
 namespace MyTodoListApi.Controllers
 {
-    [Authorize]
+   
     [ApiController]
     [Route("api/[controller]")]
     public class ToDoController:ControllerBase
@@ -22,13 +22,21 @@ namespace MyTodoListApi.Controllers
         }
 
         //create simple get and post methods
+        [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ToDoItemModel>>> Get() =>  await context.TodoItems.ToListAsync();
+        public async Task<ActionResult<IEnumerable<ToDoItemModel>>> Get() {
 
+            Console.WriteLine( "Context User : " + HttpContext.User.Identity.Name);
+            return await context.TodoItems.ToListAsync();
+
+
+        }
+        [Authorize]
        [HttpGet("{Id}")]
        
        public ActionResult<ToDoItemModel> GetId(int Id)
         {
+            
 
             var Item =   context.TodoItems.Find(Id) ;
             if (Item == null) return NotFound();
@@ -39,7 +47,7 @@ namespace MyTodoListApi.Controllers
         }
 
 
-
+        [Authorize]
         [HttpPost]
         public ActionResult<ToDoItemModel> Create (ToDoItemModel Item)
         {
@@ -50,6 +58,7 @@ namespace MyTodoListApi.Controllers
             return Created(Item.Id.ToString() , Item); 
         }
 
+        [Authorize]
         [HttpPut("{Id}")]
         public ActionResult<ToDoItemModel> EditItem (int Id, ToDoItemModel model)
         {
@@ -63,6 +72,7 @@ namespace MyTodoListApi.Controllers
             return NoContent();
         }
        
+        [Authorize]
         [HttpDelete("{Id}")]
         public async Task<ActionResult<ToDoItemModel>> RemoveItem(int Id)
         {

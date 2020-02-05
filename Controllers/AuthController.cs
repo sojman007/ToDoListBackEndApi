@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MyTodoListApi.Models;
 using System;
@@ -22,12 +23,19 @@ namespace MyTodoListApi.Controllers
 
 
         
-        [HttpPost]
-        public async Task<ActionResult> Register(CurrentUser user)
+        [HttpPost("/register")]
+        public async Task<ActionResult> Register(AuthModel payload)
+ 
         {
+            CurrentUser dBaseRecord = new CurrentUser() {
+                Email = payload.Email,
+                UserName = payload.Username,
+                 
+            };
 
+            //implement serverside password verification , i.e password must obey set down rules...
 
-            var newUser = await appUserManager.CreateAsync(user , user.Password);
+            var newUser = await appUserManager.CreateAsync(dBaseRecord, payload.Password);
             if (newUser.Succeeded == false)
             {
                 var errors = newUser.Errors.ToList();
@@ -40,9 +48,47 @@ namespace MyTodoListApi.Controllers
                  return Unauthorized(newUser);
                 
             }
+            // works fine, saves users to the database 
+
             return Ok("Created Successfully");
         
         }
 
+        [Route("/login")]
+
+        public  async Task<ActionResult> LogIn()
+
+        {
+
+            var contentUserName = "olaitan1234";
+            var contentPassword = "sojman007";
+            var signin = await appSignInManager.PasswordSignInAsync(contentUserName, contentPassword, true, false);
+            
+                if (signin.Succeeded)
+            {
+
+                return Ok();
+
+            }
+
+           else  return Content($"UserName from payload : {contentUserName} and password From Payload: {contentPassword} . Login Failed");
+        }
+
+
+        [Route("/logout")]
+        public async Task<ActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+                
+            return Content("Logged Out successfully");
+            // returns the response, but really doesnt implement the logging out as the Authorized ToDo controller is still accessible 
+            //after logging out
+
+
+
+        }
+
+           
+    
     }
 }

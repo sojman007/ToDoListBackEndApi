@@ -20,7 +20,7 @@ namespace MyTodoListApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<ToDoItemModel>().ToTable("ToDoItemModel");
+            //modelBuilder.Entity<ToDoItemModel>().ToTable("ToDoItemModel");
         }
     }
 }

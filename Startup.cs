@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyTodoListApi.Data;
 using MyTodoListApi.Models;
+using System;
 
 namespace MyTodoListApi
 {
@@ -34,12 +35,16 @@ namespace MyTodoListApi
                 .AddDefaultTokenProviders();
 
             //ToDo: configure Cookie timeout
+
+
             //change redirect Url 
             services.ConfigureApplicationCookie(options => {
                 options.LoginPath = "/auth/register";
-            
+                options.ExpireTimeSpan = TimeSpan.FromSeconds(15);
+
             });
 
+            
             //configure password requirements
             services.Configure<IdentityOptions>(options =>
             {
@@ -48,10 +53,6 @@ namespace MyTodoListApi
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 2;
-               
-
-
-
 
             }
 
@@ -71,13 +72,16 @@ namespace MyTodoListApi
             {
                 app.UseDeveloperExceptionPage();
             }
+            
             app.UseCors(builder => builder.AllowAnyOrigin());
 
             app.UseHttpsRedirection();
 
-            app.UseRouting();
+            app.UseAuthentication();
 
             app.UseAuthorization();
+            app.UseRouting();
+           
 
             app.UseEndpoints(endpoints =>
             {

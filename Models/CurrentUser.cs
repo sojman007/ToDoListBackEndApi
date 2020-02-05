@@ -10,7 +10,7 @@ namespace MyTodoListApi.Models
     public class CurrentUser :IdentityUser
     {
 
-        public string Password { get; set; }
+       // public string Password { get; set; }
     }
     
 }
